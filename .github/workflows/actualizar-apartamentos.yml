@@ -1,4 +1,4 @@
-name: Actualizar apartamentos de Dover
+Name: Actualizar apartamentos de Dover
 
 on:
   workflow_dispatch:
@@ -28,7 +28,7 @@ jobs:
           TEST_EMAIL: ${{ inputs.test_email }}
         run: |
           python - <<'PY'
-          import json, re, hashlib, os, urllib.request, html as htmllib
+          import json, re, hashlib, os, urllib.request, urllib.error, html as htmllib
           from pathlib import Path
           from datetime import datetime, timezone
 
@@ -150,10 +150,15 @@ jobs:
               payload=json.dumps({"from":sender,"to":[to],"subject":f"Dover Apartments: {len(new_items)} nuevo(s)","text":"\n".join(lines)}).encode()
               req=urllib.request.Request("https://api.resend.com/emails",data=payload,headers={"Authorization":"Bearer "+key,"Content-Type":"application/json"},method="POST")
               try:
-                  urllib.request.urlopen(req,timeout=30).read()
-                  print("Email sent:",len(new_items))
+                  with urllib.request.urlopen(req,timeout=30) as response:
+                      res_body=response.read().decode("utf-8","ignore")
+                      print("Email sent successfully:", res_body)
+              except urllib.error.HTTPError as e:
+                  error_body=e.read().decode("utf-8","ignore")
+                  print(f"Email failed with HTTP {e.code}: {e.reason}")
+                  print(f"RESEND ERROR DETAILS: {error_body}")
               except Exception as e:
-                  print("Email failed:", e)
+                  print("Email failed unexpectedly:", e)
           print("Total listings:",len(live),"new:",len(new_items),"source failures:",failures)
           PY
 
@@ -164,4 +169,3 @@ jobs:
           git add data/apartments.json data/last_update.txt
           git diff --cached --quiet || git commit -m "Actualizar apartamentos de Dover"
           git push
-          
