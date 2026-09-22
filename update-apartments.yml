@@ -1,0 +1,161 @@
+name: Actualizar apartamentos de Dover
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "17 */6 * * *"
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Descargar repositorio
+        uses: actions/checkout@v4
+
+      - name: Actualizar datos
+        env:
+          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+          ALERT_EMAIL: ${{ secrets.ALERT_EMAIL }}
+          EMAIL_FROM: ${{ secrets.EMAIL_FROM }}
+        run: |
+          python - <<'PY'
+          import json, re, hashlib, os, urllib.request, html as htmllib
+          from pathlib import Path
+          from datetime import datetime, timezone
+
+          SOURCES = [
+            ("Apartments.com 2 dormitorios", "https://www.apartments.com/dover-nj/2-bedrooms/"),
+            ("Apartments.com 3 dormitorios", "https://www.apartments.com/dover-nj/3-bedrooms/"),
+            ("Zillow Dover", "https://www.zillow.com/dover-nj/rentals/"),
+            ("Country Village", "https://jcmliving.com/apartment-rentals/nj/dover/country-village/availability/"),
+          ]
+
+          headers={"User-Agent":"Mozilla/5.0 (compatible; DoverApartmentsMonitor/1.0; +https://luis0108mv-rgb.github.io/dover-apartments/)"}
+
+          def fetch(url):
+              req=urllib.request.Request(url,headers=headers)
+              with urllib.request.urlopen(req,timeout=30) as r:
+                  return r.read().decode("utf-8","ignore")
+
+          def clean(s):
+              s=htmllib.unescape(re.sub(r"<[^>]+>"," ",s))
+              return re.sub(r"\s+"," ",s).strip()
+
+          def money(s):
+              m=re.search(r"\$([\d,]+)",s)
+              return float(m.group(1).replace(",","")) if m else None
+
+          def beds(s):
+              m=re.search(r"(\d+)\s*(?:Beds?|Bedrooms?|bedroom|bd)\b",s,re.I)
+              return m.group(1) if m else None
+
+          def address(s):
+              m=re.search(r"([0-9]+\s+[A-Za-z0-9 .'-]+(?:St|Street|Ave|Avenue|Rd|Road|Dr|Drive|Ln|Lane|Way|Pl|Place|Ct|Court|Blvd|Boulevard|Pkwy|Parkway)\b[^<]{0,80}Dover,\s*NJ\s*07801)",s,re.I)
+              return re.sub(r"\s+"," ",m.group(1)) if m else None
+
+          def extract(source,url,raw):
+              txt=clean(raw)
+              out=[]
+              # JSON-LD and visible text are both searched. Windows around Dover addresses keep records local.
+              for m in re.finditer(r".{0,1200}Dover,\s*NJ\s*07801.{0,1800}",txt,re.I):
+                  block=m.group(0)
+                  a=address(block)
+                  p=money(block)
+                  b=beds(block)
+                  if a and p and b in ("2","3"):
+                      name=a.split(",")[0]
+                      key=f"{name}|{p}|{b}|{url}"
+                      out.append({
+                          "id": int(hashlib.sha1(key.encode()).hexdigest()[:8],16),
+                          "name": name,
+                          "addr": a,
+                          "price": p,
+                          "beds": b,
+                          "baths": 0,
+                          "sqft": 0,
+                          "avail": "check",
+                          "features": [],
+                          "tags": ["🏢 Apartamento"],
+                          "phone": "",
+                          "source": url,
+                          "sourceName": source
+                      })
+              # Special property-level entries that may not include full address in every block.
+              for name,pat in [
+                  ("80East",r"80East.{0,700}\$([\d,]+).{0,300}2\s*Beds?"),
+                  ("Dover Hills Apartments",r"Dover Hills Apartments.{0,700}\$([\d,]+).{0,300}2\s*Beds?"),
+                  ("Meridia Transit Plaza",r"Meridia Transit Plaza.{0,700}\$([\d,]+).{0,300}2\s*Beds?"),
+              ]:
+                  m=re.search(pat,txt,re.I)
+                  if m:
+                      p=float(m.group(1).replace(",",""))
+                      addrmap={"80East":"80 E McFarlan St, Dover, NJ 07801","Dover Hills Apartments":"99-120 1st St, Dover, NJ 07801","Meridia Transit Plaza":"1 W Dickerson St, Dover, NJ 07801"}
+                      key=f"{name}|{p}|2|{url}"
+                      out.append({"id":int(hashlib.sha1(key.encode()).hexdigest()[:8],16),"name":name+" — 2 habitaciones","addr":addrmap[name],"price":p,"beds":"2","baths":0,"sqft":0,"avail":"check","features":[],"tags":["🏢 Apartamento"],"phone":"","source":url,"sourceName":source})
+              return out
+
+          all_items=[]
+          failures=0
+          for source,url in SOURCES:
+              try:
+                  raw=fetch(url)
+                  found=extract(source,url,raw)
+                  all_items.extend(found)
+                  print(source, "->", len(found))
+              except Exception as e:
+                  failures+=1
+                  print("SOURCE FAILED",source,e)
+
+          # Deduplicate by address + beds + price + source.
+          uniq={}
+          for x in all_items:
+              k=(x["addr"].lower(),x["beds"],x["price"],x["source"])
+              uniq[k]=x
+          live=list(uniq.values())
+
+          data_path=Path("data/apartments.json")
+          old=json.loads(data_path.read_text()) if data_path.exists() else []
+
+          # Never replace good data with an empty/partial scrape.
+          if len(live) < 3:
+              print("Too few live results; preserving previous data.")
+              live=old
+
+          live.sort(key=lambda x:(int(x["beds"]),x["price"],x["addr"]))
+          data_path.write_text(json.dumps(live,ensure_ascii=False,indent=2))
+
+          old_keys={(x.get("addr"),x.get("beds"),x.get("price")) for x in old}
+          new_items=[x for x in live if (x.get("addr"),x.get("beds"),x.get("price")) not in old_keys]
+          Path("data/last_update.txt").write_text(datetime.now(timezone.utc).isoformat())
+
+          # Optional email notification. It activates automatically after the user adds the three GitHub secrets.
+          key=os.getenv("RESEND_API_KEY")
+          to=os.getenv("ALERT_EMAIL")
+          sender=os.getenv("EMAIL_FROM")
+          if key and to and sender and new_items:
+              lines=["Nuevos apartamentos encontrados en Dover, NJ",""]
+              for x in new_items[:20]:
+                  lines.append(f'{x["beds"]} hab · ${x["price"]:,.0f}/mes · {x["addr"]}')
+                  lines.append(x["source"])
+                  lines.append("")
+              payload=json.dumps({"from":sender,"to":[to],"subject":f"Dover Apartments: {len(new_items)} nuevo(s)","text":"\n".join(lines)}).encode()
+              req=urllib.request.Request("https://api.resend.com/emails",data=payload,headers={"Authorization":"Bearer "+key,"Content-Type":"application/json"},method="POST")
+              try:
+                  urllib.request.urlopen(req,timeout=30).read()
+                  print("Email sent:",len(new_items))
+              except Exception as e:
+                  print("Email failed:",e)
+
+          print("Total listings:",len(live),"new:",len(new_items),"source failures:",failures)
+          PY
+
+      - name: Guardar cambios
+        run: |
+          git config user.name "Dover Apartments Bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/apartments.json data/last_update.txt
+          git diff --cached --quiet || git commit -m "Actualizar apartamentos de Dover"
+          git push
