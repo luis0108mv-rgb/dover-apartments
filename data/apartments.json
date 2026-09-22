@@ -1,1 +1,56 @@
-[]
+[
+  {
+    "id": 10485761,
+    "name": "80East — 2 habitaciones",
+    "addr": "80 E McFarlan St, Dover, NJ 07801",
+    "price": 2375,
+    "beds": "2",
+    "baths": 0,
+    "sqft": 0,
+    "avail": "check",
+    "status": "🟢 DISPONIBLE AHORA",
+    "features": [],
+    "tags": [
+      "🏢 Apartamento"
+    ],
+    "phone": "",
+    "source": "https://www.apartments.com/dover-nj/2-bedrooms/",
+    "sourceName": "Apartments.com"
+  },
+  {
+    "id": 20971522,
+    "name": "Dover Hills Apartments — 2 habitaciones",
+    "addr": "99-120 1st St, Dover, NJ 07801",
+    "price": 2200,
+    "beds": "2",
+    "baths": 0,
+    "sqft": 0,
+    "avail": "check",
+    "status": "🟢 DISPONIBLE AHORA",
+    "features": [],
+    "tags": [
+      "🏢 Apartamento"
+    ],
+    "phone": "",
+    "source": "https://www.apartments.com/dover-nj/2-bedrooms/",
+    "sourceName": "Apartments.com"
+  },
+  {
+    "id": 31457283,
+    "name": "Meridia Transit Plaza — 2 habitaciones",
+    "addr": "1 W Dickerson St, Dover, NJ 07801",
+    "price": 2500,
+    "beds": "2",
+    "baths": 0,
+    "sqft": 0,
+    "avail": "check",
+    "status": "🟢 DISPONIBLE AHORA",
+    "features": [],
+    "tags": [
+      "🏢 Apartamento"
+    ],
+    "phone": "",
+    "source": "https://www.apartments.com/dover-nj/2-bedrooms/",
+    "sourceName": "Apartments.com"
+  }
+]
