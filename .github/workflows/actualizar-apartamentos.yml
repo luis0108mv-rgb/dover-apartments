@@ -1,4 +1,4 @@
-Name: Actualizar apartamentos de Dover
+name: Actualizar apartamentos de Dover
 
 on:
   workflow_dispatch:
