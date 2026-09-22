@@ -141,7 +141,7 @@ jobs:
           key=os.getenv("RESEND_API_KEY")
           to=os.getenv("ALERT_EMAIL")
           sender=os.getenv("EMAIL_FROM")
-          if key and to and sender and new_items:
+          if key and to and sender and (new_items or os.getenv("TEST_EMAIL") == "true"):
               lines=["Nuevos apartamentos encontrados en Dover, NJ",""]
               for x in new_items[:20]:
                   lines.append(f'{x["beds"]} hab · ${x["price"]:,.0f}/mes · {x["addr"]}')
@@ -164,4 +164,4 @@ jobs:
           git add data/apartments.json data/last_update.txt
           git diff --cached --quiet || git commit -m "Actualizar apartamentos de Dover"
           git push
-          if clave and remitente and (nuevos_elementos or os.getenv("TEST_EMAIL") == "true"):
+          
