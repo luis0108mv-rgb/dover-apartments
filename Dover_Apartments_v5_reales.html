@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Dover Apartments</title>
+<style>
+:root{--blue:#1769e0;--dark:#10233f;--bg:#f5f7fb;--green:#0da451;--muted:#667085}
+*{box-sizing:border-box}body{margin:0;font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:var(--dark)}
+button,input,select{font:inherit}button{cursor:pointer}
+header{background:linear-gradient(135deg,#0d4fb8,#2279ed);color:#fff;padding:22px 18px 28px;border-radius:0 0 26px 26px}
+.brand{display:flex;align-items:center;gap:9px;font-weight:800;font-size:22px}.brand span{font-size:28px}.sub{opacity:.9;font-size:13px;margin-top:3px}
+.hero{font-size:30px;font-weight:800;line-height:1.08;margin:22px 0 18px}
+.search{background:#fff;border-radius:16px;padding:8px;display:flex;gap:8px;box-shadow:0 8px 24px #001b4d2b}.search input{border:0;outline:0;flex:1;padding:12px;font-size:16px;min-width:0}.search button{border:0;background:var(--blue);color:#fff;border-radius:12px;padding:12px 16px;font-weight:800}
+main{max-width:1050px;margin:auto;padding:14px 18px 35px}
+nav{display:flex;justify-content:space-around;background:#fff;border-bottom:1px solid #e4e7ec;padding:9px 0;position:sticky;top:0;z-index:10;margin:0 -18px 15px}
+nav button{border:0;background:none;color:#667085;font-weight:800;padding:8px 10px}nav button.active{color:var(--blue)}
+.chips{display:flex;gap:8px;overflow-x:auto;padding:3px 0 12px}.chip{white-space:nowrap;background:#fff;border:1px solid #dce3ef;border-radius:999px;padding:9px 13px}.chip.active{background:#e7f0ff;color:var(--blue);border-color:#a9c8ff}
+.controls{display:flex;justify-content:space-between;align-items:center;margin:3px 0 12px}.filterBtn{border:1px solid #dce3ef;background:#fff;border-radius:999px;padding:10px 14px}
+.filters{background:#fff;border-radius:15px;padding:14px;margin-bottom:15px;display:none;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;box-shadow:0 3px 14px #10233f12}.filters.show{display:grid}.filters label{font-size:13px;color:var(--muted);font-weight:700}.filters input,.filters select{width:100%;margin-top:5px;padding:10px;border:1px solid #d7deea;border-radius:10px;background:#fff}
+.notice{background:#eef6ff;border:1px solid #cfe1ff;padding:13px;border-radius:14px;margin:12px 0 18px;font-size:14px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px}
+.card{background:#fff;border-radius:18px;overflow:hidden;box-shadow:0 4px 18px #10233f12;position:relative}.photo{height:165px;background:linear-gradient(135deg,#cfe1f8,#91b6df);display:flex;align-items:center;justify-content:center;font-size:55px}.badge{position:absolute;top:12px;left:12px;background:var(--green);color:#fff;padding:7px 10px;border-radius:999px;font-size:12px;font-weight:800}.badge.soon{background:#1769e0}.heart{position:absolute;top:10px;right:10px;background:#fff;border:0;width:40px;height:40px;border-radius:50%;font-size:22px}
+.body{padding:15px}.name{font-size:19px;font-weight:800}.addr{color:var(--muted);font-size:13px;margin:5px 0 9px}.price{font-size:23px;font-weight:800}.meta{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}.meta span{background:#f0f3f8;padding:6px 8px;border-radius:8px;font-size:13px}.actions{display:flex;gap:8px}.actions button{flex:1;padding:10px;border-radius:10px;border:1px solid #bdd0ef;background:#fff;color:var(--blue);font-weight:800}.actions .primary{background:var(--blue);color:#fff}
+.map{height:390px;border-radius:20px;background:#dcebd4;position:relative;overflow:hidden;border:1px solid #cbd9c3;margin-top:12px}.road{position:absolute;background:#fff;opacity:.9}.r1{width:120%;height:34px;top:45%;left:-10%;transform:rotate(-15deg)}.r2{height:120%;width:25px;left:52%;top:-10%;transform:rotate(24deg)}.pin{position:absolute;background:#1262d6;color:#fff;padding:8px 11px;border-radius:18px;font-weight:800;font-size:13px;box-shadow:0 3px 8px #001b4d55;border:0}.station{position:absolute;left:45%;top:51%;background:#26364d;color:#fff;padding:8px 10px;border-radius:9px;font-weight:800}
+.empty{background:#fff;border-radius:18px;padding:35px 20px;text-align:center;color:var(--muted)}
+.modal{position:fixed;inset:0;background:#0008;display:none;align-items:flex-end;justify-content:center;z-index:30}.modal.show{display:flex}.sheet{background:#fff;width:100%;max-width:600px;border-radius:24px 24px 0 0;padding:20px;max-height:85vh;overflow:auto}.close{float:right;border:0;background:#f0f2f5;border-radius:50%;width:38px;height:38px;font-size:20px}.detailHero{height:150px;border-radius:15px;background:linear-gradient(135deg,#cfe1f8,#91b6df);display:flex;align-items:center;justify-content:center;font-size:65px;clear:both}.detailBtns{display:flex;gap:8px;margin-top:15px}.detailBtns button{flex:1;padding:12px;border-radius:11px;border:1px solid #bdd0ef;background:#fff;color:var(--blue);font-weight:800}.detailBtns .primary{background:var(--blue);color:#fff}
+.toast{position:fixed;left:50%;bottom:25px;transform:translateX(-50%);background:#14233a;color:#fff;padding:12px 17px;border-radius:999px;display:none;z-index:50;font-weight:700}.toast.show{display:block}
+@media(min-width:800px){.hero{font-size:40px}.modal{align-items:center}.sheet{border-radius:24px}}
+</style>
+</head>
+<body>
+<header>
+ <div class="brand"><span>🏠</span> Dover Apartments</div>
+ <div class="sub">DOVER, NJ 07801</div>
+ <div class="hero">Encuentra tu próximo hogar en Dover</div>
+ <div class="search"><input id="q" value="" placeholder="Ej: apartamento, 1 habitación, Country Village..."><button onclick="doSearch()">🔎 Buscar</button></div>
+</header>
+
+<main>
+<nav>
+ <button id="tabHome" class="active" onclick="setTab('home')">⌂ Inicio</button>
+ <button id="tabMap" onclick="setTab('map')">🗺 Mapa</button>
+ <button id="tabFav" onclick="setTab('fav')">♡ Favoritos</button>
+ <button id="tabAlert" onclick="setTab('alerts')">🔔 Alertas</button>
+</nav>
+
+<section id="homeSection">
+ <div class="chips">
+  <button class="chip active" onclick="quick('all')">Todos</button>
+  <button class="chip" onclick="quick('now')">🟢 Disponible ahora</button>
+  <button class="chip" onclick="quick('2')">2 habitaciones</button>
+  <button class="chip" onclick="quick('3')">3 habitaciones</button>
+  <button class="chip" onclick="quick('parking')">🚗 Parking</button>
+ </div>
+ <div class="controls"><strong id="count">0 apartamentos</strong><button class="filterBtn" onclick="toggleFilters()">⚙ Filtros</button></div>
+ <div id="filters" class="filters">
+  <label>Precio máximo<input id="maxPrice" type="number" placeholder="Ej. 2000" oninput="render()"></label>
+  <label>Dormitorios<select id="beds" onchange="render()"><option value="">Cualquiera</option><option value="Studio">Studio</option><option value="1">1</option><option value="2">2</option><option value="3">3+</option></select></label>
+  <label>Disponibilidad<select id="avail" onchange="render()"><option value="">Todas</option><option value="now">Ahora</option><option value="soon">Próximamente</option></select></label>
+  <label>Características<select id="feature" onchange="render()"><option value="">Cualquiera</option><option value="parking">Parking</option><option value="laundry">Laundry</option><option value="pets">Mascotas</option></select></label>
+ </div>
+ <div class="notice">🏠 <b>Datos reales:</b> esta página muestra una captura de anuncios públicos encontrados en Dover, NJ. Los precios y la disponibilidad pueden cambiar; abre la fuente antes de contactar.</div>
+ <div id="list" class="grid"></div>
+</section>
+
+<section id="mapSection" style="display:none">
+ <h2>Apartamentos en el mapa</h2>
+ <p class="small">Toca un precio para abrir ese apartamento.</p>
+ <div class="map">
+  <div class="road r1"></div><div class="road r2"></div><div class="station">🚆 Dover Station</div>
+  <button class="pin" style="left:12%;top:20%" onclick="openDetails(4)">$2,195</button>
+  <button class="pin" style="left:62%;top:18%" onclick="openDetails(3)">$2,375+</button>
+  <button class="pin" style="left:31%;top:67%" onclick="openDetails(6)">$2,200</button>
+  <button class="pin" style="left:72%;top:62%" onclick="openDetails(10)">$3,200</button>
+  <button class="pin" style="left:48%;top:34%" onclick="openDetails(8)">$2,500</button>
+ </div>
+</section>
+
+<section id="favSection" style="display:none"><h2>❤️ Mis favoritos</h2><div id="favList" class="grid"></div></section>
+
+
+<section id="alertSection" style="display:none">
+ <h2>🔔 Mis alertas</h2>
+ <div class="notice">
+   <b>Recibe avisos cuando aparezca un apartamento que cumpla tus criterios.</b><br>
+   La alerta se guarda en tu teléfono. El envío automático por correo/WhatsApp se activará cuando conectemos el servidor.
+ </div>
+
+ <div class="card" style="padding:18px">
+   <h3 style="margin-top:0">Crear nueva alerta</h3>
+   <div class="filters show" style="box-shadow:none;margin:10px 0 0;padding:0">
+     <label>Ciudad
+       <input value="Dover, NJ" disabled>
+     </label>
+     <label>Precio máximo
+       <input id="alertPrice" type="number" placeholder="Ej. 1900">
+     </label>
+     <label>Dormitorios
+       <select id="alertBeds">
+         <option value="">Cualquiera</option><option value="2">2</option><option value="3">3+</option>
+       </select>
+     </label>
+     <label>Disponibilidad
+       <select id="alertAvail"><option value="now">Disponible ahora</option><option value="">Cualquiera</option></select>
+     </label>
+   </div>
+
+   <h3>¿Dónde quieres recibir el aviso?</h3>
+   <label style="display:block;padding:12px;background:#f7f9fc;border-radius:12px;margin:7px 0">
+     <input id="alertEmail" type="checkbox" checked> 📧 <b>Correo electrónico</b>
+   </label>
+   <label style="display:block;padding:12px;background:#f7f9fc;border-radius:12px;margin:7px 0">
+     <input id="alertWhatsApp" type="checkbox"> 📱 <b>WhatsApp</b>
+   </label>
+   <label style="display:block;padding:12px;background:#f7f9fc;border-radius:12px;margin:7px 0">
+     <input id="alertPhone" type="checkbox"> 🔔 <b>Notificación del teléfono</b>
+   </label>
+
+   <button onclick="createAlert()" style="width:100%;margin-top:12px;background:var(--blue);color:#fff;border:0;border-radius:11px;padding:13px;font-weight:800">
+     🔔 Guardar alerta
+   </button>
+ </div>
+
+ <div id="savedAlerts"></div>
+
+ <button onclick="simulateAlert()" style="width:100%;margin-top:10px;background:#fff;color:var(--blue);border:1px solid #bdd0ef;border-radius:11px;padding:12px;font-weight:800">🧪 Probar cómo se verá un aviso</button>
+ <div class="notice" style="margin-top:18px">
+   <b>⚡ Cómo funcionará la versión real:</b><br>
+   El servidor revisará las fuentes de alquileres, comparará cada nueva unidad con tus alertas y enviará el aviso solo cuando encuentre una coincidencia nueva.
+ </div>
+</section>
+</main>
+
+<div id="modal" class="modal" onclick="if(event.target===this)closeModal()"><div class="sheet">
+ <button class="close" onclick="closeModal()">×</button><div id="modalContent"></div>
+</div></div>
+<div id="toast" class="toast"></div>
+
+<script>
+const data=[
+{id:1,name:"80East — 2 habitaciones",addr:"80 E McFarlan St, Dover, NJ 07801",price:2575,beds:"2",baths:2,sqft:0,avail:"check",features:["laundry","pets"],tags:["🧺 Laundry","🐾 Mascotas","🚆 Cerca de Dover Station"],phone:"8622789803",source:"https://www.apartments.com/dover-nj/2-bedrooms/",sourceName:"Apartments.com"},
+{id:2,name:"Dover Hills Apartments — 2 habitaciones",addr:"99-120 1st St, Dover, NJ 07801",price:2400,beds:"2",baths:0,sqft:0,avail:"check",features:[],tags:["🏢 Apartamentos"],phone:"8623059182",source:"https://www.apartments.com/dover-nj/2-bedrooms/",sourceName:"Apartments.com"},
+{id:3,name:"Meridia Transit Plaza — 2 habitaciones",addr:"1 W Dickerson St, Dover, NJ 07801",price:2375,beds:"2",baths:0,sqft:0,avail:"check",features:["pets"],tags:["🐾 Mascotas","🚆 Dover Station"],phone:"8623977566",source:"https://www.apartments.com/dover-nj/2-bedrooms/",sourceName:"Apartments.com"},
+{id:4,name:"93 Park Heights Ave — Unidad 2",addr:"93 Park Heights Ave Unit 2, Dover, NJ 07801",price:2195,beds:"2",baths:1,sqft:0,avail:"check",features:[],tags:["🏢 Apartamento"],phone:"9737297141",source:"https://www.apartments.com/dover-nj/2-bedrooms/",sourceName:"Apartments.com"},
+{id:5,name:"40 Prospect St",addr:"40 Prospect St, Dover, NJ 07801",price:2300,beds:"2",baths:1,sqft:0,avail:"check",features:[],tags:["🏢 Apartamento"],phone:"9739362145",source:"https://www.apartments.com/dover-nj/2-bedrooms/",sourceName:"Apartments.com"},
+{id:6,name:"44 Grant St — Unidad B",addr:"44 Grant St Unit B, Dover, NJ 07801",price:2200,beds:"2",baths:1,sqft:0,avail:"check",features:[],tags:["🏢 Apartamento"],phone:"9733619090",source:"https://www.apartments.com/dover-nj/2-bedrooms/",sourceName:"Apartments.com"},
+{id:7,name:"74 Belmont Ave",addr:"74 Belmont Ave, Dover, NJ 07801",price:2750,beds:"2",baths:1,sqft:0,avail:"check",features:[],tags:["🏢 Apartamento"],phone:"9737297141",source:"https://www.apartments.com/dover-nj/2-bedrooms/",sourceName:"Apartments.com"},
+{id:8,name:"376 E Blackwell St",addr:"376 E Blackwell St, Dover, NJ 07801",price:2500,beds:"3",baths:1,sqft:1000,avail:"check",features:[],tags:["🏢 Apartamento","📐 1,000 ft²"],phone:"8625794500",source:"https://www.apartments.com/dover-nj/3-bedrooms/",sourceName:"Apartments.com"},
+{id:9,name:"374 E Blackwell St",addr:"374 E Blackwell St, Dover, NJ 07801",price:2750,beds:"3",baths:0,sqft:0,avail:"check",features:[],tags:["🏢 Apartamento"],phone:"",source:"https://www.zillow.com/dover-nj/apartments/",sourceName:"Zillow"},
+{id:10,name:"2-4 Baker Ave",addr:"2-4 Baker Ave, Dover, NJ 07801",price:3200,beds:"3",baths:1.5,sqft:1800,avail:"check",features:[],tags:["🏢 Apartamento","📐 1,800 ft²"],phone:"9736276800",source:"https://www.zillow.com/dover-nj/apartments/",sourceName:"Zillow"},
+{id:11,name:"110 W Chrystal St",addr:"110 W Chrystal St, Dover, NJ 07801",price:3600,beds:"3",baths:2,sqft:1649,avail:"check",features:[],tags:["🏢 Apartamento","📐 1,649 ft²"],phone:"9735981008",source:"https://www.zillow.com/dover-nj/apartments/",sourceName:"Zillow"},
+{id:12,name:"37 E McFarlan St",addr:"37 E McFarlan St, Dover, NJ 07801",price:2900,beds:"3",baths:1,sqft:0,avail:"check",features:[],tags:["🏢 Apartamento"],phone:"",source:"https://www.zillow.com/dover-nj/apartments/",sourceName:"Zillow"},
+{id:13,name:"166 E Blackwell St",addr:"166 E Blackwell St, Dover, NJ 07801",price:3000,beds:"3",baths:1,sqft:0,avail:"check",features:[],tags:["🏢 Apartamento"],phone:"",source:"https://www.zillow.com/dover-nj/apartments/",sourceName:"Zillow"},
+{id:14,name:"87 W Clinton St — Unidad 1",addr:"87 W Clinton St Unit 1, Dover, NJ 07801",price:3800,beds:"3",baths:3.5,sqft:0,avail:"check",features:[],tags:["🏢 Apartamento"],phone:"9735981008",source:"https://www.zillow.com/dover-nj/apartments/",sourceName:"Zillow"},
+{id:15,name:"21 Front St — Unidad 21",addr:"21 Front St Unit 21, Dover, NJ 07801",price:2500,beds:"3",baths:1,sqft:0,avail:"check",features:[],tags:["🏢 Apartamento"],phone:"",source:"https://www.zillow.com/dover-nj/apartments/",sourceName:"Zillow"}
+]
+let favorites=JSON.parse(localStorage.getItem('doverFav')||'[]').map(Number);
+
+function saveFav(){localStorage.setItem('doverFav',JSON.stringify(favorites))}
+function toast(t){const e=document.getElementById('toast');e.textContent=t;e.classList.add('show');setTimeout(()=>e.classList.remove('show'),1800)}
+function render(source=data){
+ const q=document.getElementById('q').value.trim().toLowerCase();
+ const max=Number(document.getElementById('maxPrice').value)||999999;
+ const beds=document.getElementById('beds').value, av=document.getElementById('avail').value, feat=document.getElementById('feature').value;
+ const generic=/^(apartamento|apartamentos|renta|alquiler|dover|nj|casa|hogar)$/.test(q);
+ const arr=source.filter(x=>
+  (!q||generic||(`${x.name} ${x.addr} ${x.beds} habitacion habitaciones ${x.price}`).toLowerCase().includes(q)) &&
+  x.price<=max && (!beds||x.beds===beds) && (!av||x.avail===av) && (!feat||x.features.includes(feat))
+ );
+ document.getElementById('count').textContent=`${arr.length} apartamento${arr.length===1?'':'s'} encontrado${arr.length===1?'':'s'}`;
+ document.getElementById('list').innerHTML=arr.length?arr.map(card).join(''):`<div class="empty">🔎<h3>No encontramos apartamentos</h3><p>Prueba quitando algún filtro o busca por “apartamento” para ver todos.</p><button class="chip" onclick="clearFilters()">Limpiar filtros</button></div>`;
+}
+function card(x){return `<article class="card" id="card${x.id}">
+<div class="photo">🏠</div><div class="badge ${x.avail==='soon'?'soon':''}">${x.avail==='now'?'🟢 Disponible ahora':x.avail==='soon'?'🔵 Disponible el '+x.available:'🟠 Consultar disponibilidad'}</div>
+<button class="heart" onclick="toggleFav(${x.id})">${favorites.includes(x.id)?'♥':'♡'}</button>
+<div class="body"><div class="name">${x.name}</div><div class="addr">${x.addr}</div><div class="price">$${x.price.toLocaleString()}/mes</div>
+<div class="meta"><span>🛏 ${x.beds} hab</span><span>🛁 ${x.baths} baño</span><span>${x.sqft?`📐 ${x.sqft} ft²`:``}</span>${x.tags.map(t=>`<span>${t}</span>`).join('')}</div>
+<div class="actions"><button onclick="openDetails(${x.id})">👁 Ver detalles</button><button class="primary" onclick="openContact(${x.id})">✉ Contactar</button></div></div></article>`}
+function toggleFav(id){favorites.includes(id)?favorites=favorites.filter(x=>x!==id):favorites.push(id);saveFav();render();if(document.getElementById('favSection').style.display!=='none')renderFav();toast(favorites.includes(id)?'❤️ Guardado en favoritos':'Eliminado de favoritos')}
+function renderFav(){const arr=data.filter(x=>favorites.includes(x.id));document.getElementById('favList').innerHTML=arr.length?arr.map(card).join(''):`<div class="empty">♡<h3>Aún no tienes favoritos</h3><p>Toca el corazón de un apartamento para guardarlo.</p></div>`}
+function clearFilters(){document.getElementById('q').value='';document.getElementById('maxPrice').value='';document.getElementById('beds').value='';document.getElementById('avail').value='';document.getElementById('feature').value='';render()}
+function doSearch(){render();setTab('home');}
+function quick(type){
+ document.getElementById('q').value='';
+ document.getElementById('maxPrice').value='';document.getElementById('beds').value='';document.getElementById('avail').value='';document.getElementById('feature').value='';
+ if(type==='now')document.getElementById('avail').value='now';
+ if(type==='2'||type==='3')document.getElementById('beds').value=type;
+ if(type==='parking')document.getElementById('feature').value='parking';
+ render();
+}
+function toggleFilters(){document.getElementById('filters').classList.toggle('show')}
+function openDetails(id){const x=data.find(a=>a.id===id);const status=x.avail==='now'?'🟢 Disponible ahora':x.avail==='soon'?'🔵 Disponible el '+x.available:'🟠 Consultar disponibilidad';const size=x.sqft?`<span>📐 ${x.sqft} ft²</span>`:'';document.getElementById('modalContent').innerHTML=`<div class="detailHero">🏠</div><h2>${x.name}</h2><p class="small">${x.addr}</p><h1>$${x.price.toLocaleString()}/mes</h1><div class="meta"><span>🛏 ${x.beds} hab</span><span>🛁 ${x.baths} baño</span>${size}${x.tags.map(t=>`<span>${t}</span>`).join('')}</div><p><b>Disponibilidad:</b> ${status}</p><p><b>Teléfono:</b> ${x.phone}</p><p class="small">Fuente: ${x.sourceName||"fuente pública"}. La disponibilidad y el precio pueden cambiar. Verifica el anuncio antes de aplicar o pagar.</p><div class="detailBtns"><button onclick="toggleFav(${x.id});openDetails(${x.id})">${favorites.includes(x.id)?'♥ Favorito':'♡ Guardar'}</button><button class="primary" onclick="callProperty(${x.id})">📞 Llamar</button></div><div class="detailBtns"><button onclick="window.open(x.source,'_blank')">🌐 Abrir fuente</button><button onclick="openContact(${x.id})">✉ Mensaje</button></div>`;document.getElementById('modal').classList.add('show')}
+function openContact(id){const x=data.find(a=>a.id===id);document.getElementById('modalContent').innerHTML=`<h2>Contactar</h2><p><b>${x.name}</b></p><p>${x.addr}</p><p class="small">Puedes llamar directamente al administrador usando el número publicado para esta propiedad.</p><div class="detailBtns"><button onclick="closeModal()">Cancelar</button><button class="primary" onclick="callProperty(${x.id})">📞 Llamar ${x.phone}</button></div><div class="detailBtns"><button onclick="window.open(x.source,'_blank')">🌐 Abrir fuente</button></div>`;document.getElementById('modal').classList.add('show')}
+function callProperty(id){const x=data.find(a=>a.id===id);window.location.href='tel:'+x.phone}
+function closeModal(){document.getElementById('modal').classList.remove('show')}
+function simulateAlert(){
+ const alerts=getAlerts();
+ if(!alerts.length){toast('Primero crea una alerta');return}
+ const a=alerts[0];
+ const max=a.price?Number(a.price):999999;
+ const candidates=data.filter(x=>x.price<=max && (!a.beds||x.beds===a.beds) && (!a.avail||x.avail===a.avail));
+ const x=candidates[0];
+ if(!x){toast('No hay coincidencias en la demo');return}
+ document.getElementById('modalContent').innerHTML=`<h2>🚨 Así recibirías el aviso</h2>
+ <div class="notice"><b>NUEVO APARTAMENTO EN DOVER</b><br><br>
+ 🏠 ${x.name}<br>🛏️ ${x.beds} habitación(es)<br>💰 $${x.price.toLocaleString()}/mes<br>📍 ${x.addr}<br>${x.avail==='now'?'🟢 Disponible ahora':'🟠 Consultar disponibilidad'}</div>
+ <p class="small">En producción, este contenido se enviaría por los canales que seleccionaste.</p>
+ <div class="detailBtns"><button onclick="closeModal()">Cerrar</button><button class="primary" onclick="openDetails(${x.id})">Ver apartamento</button></div>`;
+ document.getElementById('modal').classList.add('show');
+}
+function setTab(tab){
+ ['home','map','fav','alerts'].forEach(x=>{document.getElementById(x+'Section').style.display=x===tab?'block':'none';document.getElementById('tab'+x.charAt(0).toUpperCase()+x.slice(1)).classList.toggle('active',x===tab)});
+ if(tab==='home')render();if(tab==='fav')renderFav();if(tab==='alerts')renderAlerts();
+ window.scrollTo({top:0,behavior:'smooth'});
+}
+function getAlerts(){try{return JSON.parse(localStorage.getItem('doverAlerts')||'[]')}catch(e){return[]}}
+function saveAlerts(a){localStorage.setItem('doverAlerts',JSON.stringify(a))}
+function createAlert(){
+ const price=document.getElementById('alertPrice').value||'';
+ const beds=document.getElementById('alertBeds').value||'';
+ const avail=document.getElementById('alertAvail').value||'';
+ const channels=[];
+ if(document.getElementById('alertEmail').checked)channels.push('📧 Correo');
+ if(document.getElementById('alertWhatsApp').checked)channels.push('📱 WhatsApp');
+ if(document.getElementById('alertPhone').checked)channels.push('🔔 Teléfono');
+ if(!channels.length){toast('Selecciona al menos un canal');return}
+ const alerts=getAlerts();
+ alerts.push({id:Date.now(),price,beds,avail,channels,active:true});
+ saveAlerts(alerts);renderAlerts();toast('🔔 Alerta guardada');
+}
+function deleteAlert(id){saveAlerts(getAlerts().filter(a=>a.id!==id));renderAlerts();toast('Alerta eliminada')}
+function renderAlerts(){
+ const el=document.getElementById('savedAlerts'); const alerts=getAlerts();
+ if(!alerts.length){el.innerHTML='<div class="empty" style="margin-top:15px">🔔<h3>No tienes alertas</h3><p>Crea una arriba para que Dover Apartments sepa qué estás buscando.</p></div>';return}
+ el.innerHTML=alerts.map((a,i)=>`<div class="card" style="padding:16px;margin-top:12px">
+   <div style="display:flex;justify-content:space-between;gap:10px">
+    <div><b>🔔 Alerta ${i+1}</b><div class="small">Dover, NJ · ${a.beds?a.beds+' habitación(es)':'cualquier dormitorio'} · ${a.price?'hasta $'+Number(a.price).toLocaleString():'sin límite'} · ${a.avail?'disponible ahora':'cualquier disponibilidad'}</div></div>
+    <button onclick="deleteAlert(${a.id})" style="border:0;background:#fff;color:#c62828;font-weight:800">Eliminar</button>
+   </div>
+   <div style="margin-top:10px">${a.channels.map(c=>`<span class="chip" style="display:inline-block;margin:2px">${c}</span>`).join('')}</div>
+   <div class="small" style="margin-top:8px">Estado: 🟢 Activa</div>
+ </div>`).join('');
+}
+render();
+</script>
+</body>
+</html>
