@@ -1,4 +1,4 @@
-name: Actualizar apartamentos de Dover
+Name: Actualizar apartamentos de Dover
 
 on:
   workflow_dispatch:
@@ -65,7 +65,6 @@ jobs:
           def extract(source,url,raw):
               txt=clean(raw)
               out=[]
-              # JSON-LD and visible text are both searched. Windows around Dover addresses keep records local.
               for m in re.finditer(r".{0,1200}Dover,\s*NJ\s*07801.{0,1800}",txt,re.I):
                   block=m.group(0)
                   a=address(block)
@@ -89,7 +88,6 @@ jobs:
                           "source": url,
                           "sourceName": source
                       })
-              # Special property-level entries that may not include full address in every block.
               for name,pat in [
                   ("80East",r"80East.{0,700}\$([\d,]+).{0,300}2\s*Beds?"),
                   ("Dover Hills Apartments",r"Dover Hills Apartments.{0,700}\$([\d,]+).{0,300}2\s*Beds?"),
@@ -115,7 +113,6 @@ jobs:
                   failures+=1
                   print("SOURCE FAILED",source,e)
 
-          # Deduplicate by address + beds + price + source.
           uniq={}
           for x in all_items:
               k=(x["addr"].lower(),x["beds"],x["price"],x["source"])
@@ -125,7 +122,6 @@ jobs:
           data_path=Path("data/apartments.json")
           old=json.loads(data_path.read_text()) if data_path.exists() else []
 
-          # Never replace good data with an empty/partial scrape.
           if len(live) < 3:
               print("Too few live results; preserving previous data.")
               live=old
@@ -137,7 +133,6 @@ jobs:
           new_items=[x for x in live if (x.get("addr"),x.get("beds"),x.get("price")) not in old_keys]
           Path("data/last_update.txt").write_text(datetime.now(timezone.utc).isoformat())
 
-          # Optional email notification. It activates automatically after the user adds the three GitHub secrets.
           key=os.getenv("RESEND_API_KEY")
           to=os.getenv("ALERT_EMAIL")
           sender=os.getenv("EMAIL_FROM")
@@ -148,7 +143,15 @@ jobs:
                   lines.append(x["source"])
                   lines.append("")
               payload=json.dumps({"from":sender,"to":[to],"subject":f"Dover Apartments: {len(new_items)} nuevo(s)","text":"\n".join(lines)}).encode()
-              req=urllib.request.Request("https://api.resend.com/emails",data=payload,headers={"Authorization":"Bearer "+key,"Content-Type":"application/json"},method="POST")
+              
+              # ENCABEZADOS CORREGIDOS CON USER-AGENT INCLUIDO
+              resend_headers = {
+                  "Authorization": "Bearer " + key,
+                  "Content-Type": "application/json",
+                  "User-Agent": "Dover-Apartments/1.0"
+              }
+              
+              req=urllib.request.Request("https://api.resend.com/emails", data=payload, headers=resend_headers, method="POST")
               try:
                   with urllib.request.urlopen(req,timeout=30) as response:
                       res_body=response.read().decode("utf-8","ignore")
