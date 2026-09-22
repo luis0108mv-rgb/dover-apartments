@@ -2,153 +2,283 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Apartamentos en Dover, NJ</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <title>Dover Apartments</title>
     <style>
         :root {
-            --bg-color: #f4f6f8;
+            --blue: #1709e0;
+            --dark: #10213f;
+            --bg: #f5f7fb;
+            --green: #0dA451;
+            --muted: #677085;
             --card-bg: #ffffff;
-            --text-color: #1f2937;
-            --primary-color: #2563eb;
-            --border-color: #e5e7eb;
+            --border: #e2e8f0;
+        }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
         }
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            margin: 0;
-            padding: 16px;
+            background: var(--bg);
+            color: var(--dark);
+            padding-bottom: 30px;
         }
         header {
-            text-align: center;
-            margin-bottom: 24px;
+            background: linear-gradient(135deg, #1709e0, #2279ed);
+            color: #fff;
+            padding: 22px 16px;
+            border-radius: 0 0 20px 20px;
+            box-shadow: 0 4px 12px rgba(23, 9, 224, 0.15);
         }
-        h1 {
-            font-size: 1.5rem;
-            margin-bottom: 4px;
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 800;
+            font-size: 22px;
         }
-        .last-update {
-            font-size: 0.85rem;
-            color: #6b7280;
+        .sub {
+            opacity: 0.85;
+            font-size: 13px;
+            margin-top: 2px;
         }
-        .container {
+        .hero {
+            font-size: 16px;
+            font-weight: 600;
+            line-height: 1.3;
+            margin: 14px 0 10px;
+        }
+        .search-box {
+            background: #fff;
+            border-radius: 12px;
+            padding: 8px 12px;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+        .search-box input {
+            border: none;
+            outline: none;
+            width: 100%;
+            font-size: 14px;
+            color: var(--dark);
+        }
+        main {
             max-width: 600px;
             margin: 0 auto;
+            padding: 16px;
+        }
+        nav {
+            display: flex;
+            justify-content: space-around;
+            background: #fff;
+            border-bottom: 1px solid var(--border);
+            padding: 8px 0;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        nav button {
+            background: none;
+            border: none;
+            color: var(--muted);
+            font-weight: 600;
+            padding: 8px 12px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+        nav button.active {
+            color: var(--blue);
+            border-bottom: 2px solid var(--blue);
+        }
+        .chips {
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            padding: 12px 0;
+        }
+        .chip {
+            background: #fff;
+            border: 1px solid var(--border);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            white-space: nowrap;
+            color: var(--dark);
+            cursor: pointer;
+        }
+        .chip.active {
+            background: var(--blue);
+            color: #fff;
+            border-color: var(--blue);
+        }
+        .grid {
             display: flex;
             flex-direction: column;
             gap: 16px;
+            margin-top: 12px;
         }
         .card {
-            background-color: var(--card-bg);
-            border-radius: 12px;
+            background: var(--card-bg);
+            border-radius: 16px;
             padding: 16px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-            border: 1px solid var(--border-color);
+            box-shadow: 0 2px 8px rgba(16, 33, 63, 0.05);
+            border: 1px solid var(--border);
+            position: relative;
         }
-        .status-badge {
+        .badge {
             display: inline-block;
-            font-size: 0.8rem;
-            font-weight: 600;
+            font-size: 11px;
+            font-weight: 700;
             padding: 4px 8px;
             border-radius: 6px;
-            background-color: #f3f4f6;
+            background: #eef2ff;
+            color: var(--blue);
             margin-bottom: 8px;
         }
-        .price {
-            font-size: 1.4rem;
-            font-weight: bold;
-            color: #059669;
-            margin-bottom: 4px;
+        .badge.warning {
+            background: #fef3c7;
+            color: #d97706;
         }
-        .title {
-            font-size: 1.1rem;
-            font-weight: 600;
-            margin-bottom: 4px;
+        .card .price {
+            font-size: 20px;
+            font-weight: 800;
+            color: var(--green);
         }
-        .address {
-            font-size: 0.9rem;
-            color: #4b5563;
+        .card .title {
+            font-size: 16px;
+            font-weight: 700;
+            margin: 4px 0;
+        }
+        .card .addr {
+            font-size: 13px;
+            color: var(--muted);
             margin-bottom: 12px;
         }
-        .meta {
-            display: flex;
-            gap: 12px;
-            font-size: 0.85rem;
-            color: #6b7280;
-            margin-bottom: 12px;
-        }
-        .btn {
-            display: block;
+        .card .btn-link {
+            display: inline-block;
+            width: 100%;
             text-align: center;
-            background-color: var(--primary-color);
-            color: white;
+            background: var(--blue);
+            color: #fff;
             text-decoration: none;
             padding: 10px;
-            border-radius: 8px;
-            font-weight: 600;
-            font-size: 0.9rem;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 14px;
+            margin-top: 8px;
+        }
+        .livestatus {
+            font-size: 12px;
+            color: var(--muted);
+            margin: 8px 0;
+            text-align: right;
         }
     </style>
 </head>
 <body>
 
     <header>
-        <h1>🏢 Apartamentos en Dover, NJ</h1>
-        <div class="last-update" id="last-update">Cargando fecha de actualización...</div>
+        <div class="brand">🏢 <span>Dover Apartments</span></div>
+        <div class="sub">DOVER, NJ 07801</div>
+        <div class="hero">Encuentra tu próximo hogar en Dover</div>
+        <div class="search-box">
+            <input type="text" id="q" placeholder="Ej: 2 habitaciones, Country Village..." onkeyup="filterResults()">
+        </div>
     </header>
 
-    <div class="container" id="apartments-container">
-        <p style="text-align: center;">Cargando anuncios...</p>
-    </div>
+    <main>
+        <nav>
+            <button class="active">🏠 Inicio</button>
+            <button onclick="alert('Búsqueda guardada')">⭐ Favoritos</button>
+            <button onclick="alert('Alertas activas')">🔔 Alertas</button>
+        </nav>
+
+        <div class="chips">
+            <button class="chip active" onclick="setBedFilter('all', this)">Todos</button>
+            <button class="chip" onclick="setBedFilter('2', this)">2 Habitaciones</button>
+            <button class="chip" onclick="setBedFilter('3', this)">3 Habitaciones</button>
+        </div>
+
+        <div class="livestatus" id="lastupdate">Cargando actualización...</div>
+
+        <div class="grid" id="grid">
+            <p style="text-align: center; color: var(--muted);">Cargando apartamentos...</p>
+        </div>
+    </main>
 
     <script>
-        async function loadApartments() {
+        let allData = [];
+        let currentBedFilter = 'all';
+
+        async function init() {
             try {
-                const resData = await fetch('data/apartments.json?t=' + Date.now());
-                const apartments = await resData.json();
+                const res = await fetch('data/apartments.json?t=' + Date.now());
+                allData = await res.json();
 
-                const resTime = await fetch('data/last_update.txt?t=' + Date.now());
-                const lastUpdate = await resTime.text();
-
-                if(lastUpdate) {
-                    const dateObj = new Date(lastUpdate);
-                    document.getElementById('last-update').innerText = 'Última verificación: ' + dateObj.toLocaleString();
+                const timeRes = await fetch('data/last_update.txt?t=' + Date.now());
+                const timeText = await timeRes.text();
+                if (timeText) {
+                    const dt = new Date(timeText);
+                    document.getElementById('lastupdate').innerText = '🔄 Actualizado: ' + dt.toLocaleString();
                 }
 
-                const container = document.getElementById('apartments-container');
-                container.innerHTML = '';
-
-                if (!apartments || apartments.length === 0) {
-                    container.innerHTML = '<p style="text-align: center;">No hay apartamentos registrados actualmente.</p>';
-                    return;
-                }
-
-                apartments.forEach(item => {
-                    const card = document.createElement('div');
-                    card.className = 'card';
-
-                    const status = item.status || '🟢 DISPONIBLE AHORA';
-                    
-                    card.innerHTML = `
-                        <div class="status-badge">${status}</div>
-                        <div class="price">$${item.price.toLocaleString()}/mes</div>
-                        <div class="title">${item.name}</div>
-                        <div class="address">📍 ${item.addr}</div>
-                        <div class="meta">
-                            <span>🛏️ ${item.beds} Hab.</span>
-                            <span>Fuente: ${item.sourceName || 'Web'}</span>
-                        </div>
-                        <a href="${item.source}" target="_blank" rel="noopener noreferrer" class="btn">Ver anuncio original ↗</a>
-                    `;
-                    container.appendChild(card);
-                });
-            } catch (err) {
-                console.error(err);
-                document.getElementById('apartments-container').innerHTML = '<p style="text-align: center;">Error al cargar los datos.</p>';
+                render();
+            } catch (e) {
+                console.error(e);
+                document.getElementById('grid').innerHTML = '<p style="text-align: center;">Error al cargar los apartamentos.</p>';
             }
         }
 
-        loadApartments();
+        function setBedFilter(beds, btn) {
+            currentBedFilter = beds;
+            document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+            btn.classList.add('active');
+            render();
+        }
+
+        function filterResults() {
+            render();
+        }
+
+        function render() {
+            const q = document.getElementById('q').value.toLowerCase();
+            const grid = document.getElementById('grid');
+            grid.innerHTML = '';
+
+            const filtered = allData.filter(item => {
+                const matchQ = !q || (item.name && item.name.toLowerCase().includes(q)) || (item.addr && item.addr.toLowerCase().includes(q));
+                const matchBed = currentBedFilter === 'all' || String(item.beds) === currentBedFilter;
+                return matchQ && matchBed;
+            });
+
+            if (filtered.length === 0) {
+                grid.innerHTML = '<p style="text-align: center; color: var(--muted); padding: 20px;">No se encontraron apartamentos con estos filtros.</p>';
+                return;
+            }
+
+            filtered.forEach(item => {
+                const card = document.createElement('div');
+                card.className = 'card';
+
+                const status = item.status || '🟢 DISPONIBLE AHORA';
+                const statusClass = status.includes('por confirmar') ? 'badge warning' : 'badge';
+
+                card.innerHTML = `
+                    <span class="${statusClass}">${status}</span>
+                    <div class="price">$${Number(item.price).toLocaleString()}/mes</div>
+                    <div class="title">${item.name || 'Apartamento en Dover'}</div>
+                    <div class="addr">📍 ${item.addr}</div>
+                    <div style="font-size: 13px; color: var(--muted); margin-bottom: 8px;">🛏️ ${item.beds} Dormitorios | Fuente: ${item.sourceName || 'Web'}</div>
+                    <a href="${item.source}" target="_blank" class="btn-link">Ver anuncio original ↗</a>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        init();
     </script>
 </body>
 </html>
