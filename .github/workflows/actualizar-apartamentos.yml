@@ -32,6 +32,8 @@ jobs:
           from pathlib import Path
           from datetime import datetime, timezone
 
+          now_iso = datetime.now(timezone.utc).isoformat()
+
           SOURCES = [
             ("Apartments.com 2 dormitorios", "https://www.apartments.com/dover-nj/2-bedrooms/"),
             ("Apartments.com 3 dormitorios", "https://www.apartments.com/dover-nj/3-bedrooms/"),
@@ -82,6 +84,8 @@ jobs:
                           "baths": 0,
                           "sqft": 0,
                           "avail": "check",
+                          "status": "🟢 DISPONIBLE AHORA",
+                          "last_verified": now_iso,
                           "features": [],
                           "tags": ["🏢 Apartamento"],
                           "phone": "",
@@ -98,7 +102,7 @@ jobs:
                       p=float(m.group(1).replace(",",""))
                       addrmap={"80East":"80 E McFarlan St, Dover, NJ 07801","Dover Hills Apartments":"99-120 1st St, Dover, NJ 07801","Meridia Transit Plaza":"1 W Dickerson St, Dover, NJ 07801"}
                       key=f"{name}|{p}|2|{url}"
-                      out.append({"id":int(hashlib.sha1(key.encode()).hexdigest()[:8],16),"name":name+" — 2 habitaciones","addr":addrmap[name],"price":p,"beds":"2","baths":0,"sqft":0,"avail":"check","features":[],"tags":["🏢 Apartamento"],"phone":"","source":url,"sourceName":source})
+                      out.append({"id":int(hashlib.sha1(key.encode()).hexdigest()[:8],16),"name":name+" — 2 habitaciones","addr":addrmap[name],"price":p,"beds":"2","baths":0,"sqft":0,"avail":"check","status":"🟢 DISPONIBLE AHORA","last_verified":now_iso,"features":[],"tags":["🏢 Apartamento"],"phone":"","source":url,"sourceName":source})
               return out
 
           all_items=[]
@@ -122,8 +126,11 @@ jobs:
           data_path=Path("data/apartments.json")
           old=json.loads(data_path.read_text()) if data_path.exists() else []
 
+          # Si se usan datos previos por falta de escaneo en vivo, ajusta el estado a confirmación pendiente
           if len(live) < 3:
               print("Too few live results; preserving previous data.")
+              for item in old:
+                  item["status"] = "⚠️ Disponibilidad por confirmar"
               live=old
 
           live.sort(key=lambda x:(int(x["beds"]),x["price"],x["addr"]))
@@ -131,7 +138,7 @@ jobs:
 
           old_keys={(x.get("addr"),x.get("beds"),x.get("price")) for x in old}
           new_items=[x for x in live if (x.get("addr"),x.get("beds"),x.get("price")) not in old_keys]
-          Path("data/last_update.txt").write_text(datetime.now(timezone.utc).isoformat())
+          Path("data/last_update.txt").write_text(now_iso)
 
           key=os.getenv("RESEND_API_KEY")
           to=os.getenv("ALERT_EMAIL")
@@ -144,7 +151,6 @@ jobs:
                   lines.append("")
               payload=json.dumps({"from":sender,"to":[to],"subject":f"Dover Apartments: {len(new_items)} nuevo(s)","text":"\n".join(lines)}).encode()
               
-              # ENCABEZADOS CORREGIDOS CON USER-AGENT INCLUIDO
               resend_headers = {
                   "Authorization": "Bearer " + key,
                   "Content-Type": "application/json",
