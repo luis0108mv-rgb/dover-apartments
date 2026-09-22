@@ -1,4 +1,4 @@
-name: Actualizar apartamentos de Dover
+Name: Actualizar apartamentos de Dover
 
 on:
   workflow_dispatch:
@@ -126,12 +126,13 @@ jobs:
           data_path=Path("data/apartments.json")
           old=json.loads(data_path.read_text()) if data_path.exists() else []
 
-          # Si se usan datos previos por falta de escaneo en vivo, ajusta el estado a confirmación pendiente
-          if len(live) < 3:
+          # GARANTÍA DE PRESERVACIÓN: Si la extracción en vivo falla o trae menos de 3 resultados,
+          # MANTIENE SIEMPRE los datos anteriores y nunca sobreescribe con []
+          if len(live) < 3 and len(old) > 0:
               print("Too few live results; preserving previous data.")
               for item in old:
                   item["status"] = "⚠️ Disponibilidad por confirmar"
-              live=old
+              live = old
 
           live.sort(key=lambda x:(int(x["beds"]),x["price"],x["addr"]))
           data_path.write_text(json.dumps(live,ensure_ascii=False,indent=2))
