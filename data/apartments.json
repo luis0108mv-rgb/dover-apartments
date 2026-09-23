@@ -1,14 +1,14 @@
 [
   {
-    "id": 10485761,
-    "name": "80East — 2 habitaciones",
-    "addr": "80 E McFarlan St, Dover, NJ 07801",
-    "price": 2375,
+    "id": 20971522,
+    "name": "Dover Hills Apartments — 2 habitaciones",
+    "addr": "99-120 1st St, Dover, NJ 07801",
+    "price": 2200,
     "beds": "2",
     "baths": 0,
     "sqft": 0,
     "avail": "check",
-    "status": "🟢 DISPONIBLE AHORA",
+    "status": "⚠️ Disponibilidad por confirmar",
     "features": [],
     "tags": [
       "🏢 Apartamento"
@@ -18,15 +18,15 @@
     "sourceName": "Apartments.com"
   },
   {
-    "id": 20971522,
-    "name": "Dover Hills Apartments — 2 habitaciones",
-    "addr": "99-120 1st St, Dover, NJ 07801",
-    "price": 2200,
+    "id": 10485761,
+    "name": "80East — 2 habitaciones",
+    "addr": "80 E McFarlan St, Dover, NJ 07801",
+    "price": 2375,
     "beds": "2",
     "baths": 0,
     "sqft": 0,
     "avail": "check",
-    "status": "🟢 DISPONIBLE AHORA",
+    "status": "⚠️ Disponibilidad por confirmar",
     "features": [],
     "tags": [
       "🏢 Apartamento"
@@ -44,7 +44,7 @@
     "baths": 0,
     "sqft": 0,
     "avail": "check",
-    "status": "🟢 DISPONIBLE AHORA",
+    "status": "⚠️ Disponibilidad por confirmar",
     "features": [],
     "tags": [
       "🏢 Apartamento"
